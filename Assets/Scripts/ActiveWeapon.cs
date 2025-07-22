@@ -29,6 +29,11 @@ public class ActiveWeapon : MonoBehaviour
         if (_cooldownAmount > 0.0f) _cooldownAmount -= Time.deltaTime;
         HandleShoot();
     }
+
+    public void SwitchWeapon(WeaponSO weaponDetails)
+    {
+        Debug.Log(weaponDetails.name);
+    }
     
     private void HandleShoot()
     {
