@@ -5000,6 +5000,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MuzzleFlash>k__BackingField: {fileID: 1749555639534516182, guid: 676552efdbdc8757d94586210ed6f5c6, type: 3}
+  <interactionLayers>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!95 &6927331190415854892
 Animator:
   serializedVersion: 7
