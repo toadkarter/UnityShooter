@@ -11694,7 +11694,7 @@ PrefabInstance:
     - target: {fileID: 16032874819028932, guid: b32294a2738678248833a0dfccafa2fd, type: 3}
       propertyPath: <MuzzleFlash>k__BackingField
       value: 
-      objectReference: {fileID: 7326391517196265290}
+      objectReference: {fileID: 0}
     - target: {fileID: 2074742802982002439, guid: b32294a2738678248833a0dfccafa2fd, type: 3}
       propertyPath: m_Name
       value: Player
@@ -11769,7 +11769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98271a7d81ab68fc9852d774e631be36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WeaponDetails>k__BackingField: {fileID: 11400000, guid: 67ccaf93ebc98476f96b5a14cdc037cb, type: 2}
+  <WeaponDetails>k__BackingField: {fileID: 11400000, guid: 70517b8727c25a749a98ae6df0947e30, type: 2}
 --- !u!1001 &6020124036026476583
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11831,11 +11831,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b8a9ddf457ee3fd9be4f6130286b6c2, type: 3}
---- !u!198 &7326391517196265290 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 8815300486202538559, guid: b32294a2738678248833a0dfccafa2fd, type: 3}
-  m_PrefabInstance: {fileID: 2802644934449529328}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

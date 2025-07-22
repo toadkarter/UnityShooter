@@ -22,6 +22,7 @@ public class ActiveWeapon : MonoBehaviour
     void Start()
     {
         _currentWeapon = GetComponentInChildren<Weapon>();
+        SwitchWeapon(WeaponDetails);
     }
     
     void Update()
@@ -32,12 +33,19 @@ public class ActiveWeapon : MonoBehaviour
 
     public void SwitchWeapon(WeaponSO weaponDetails)
     {
-        Debug.Log(weaponDetails.name);
+        if (_currentWeapon)
+        {
+            Destroy(_currentWeapon);
+        }
+
+        Weapon newWeapon = Instantiate(weaponDetails.WeaponPrefab, transform).GetComponent<Weapon>();
+        _currentWeapon = newWeapon;
+        WeaponDetails = weaponDetails;
     }
     
     private void HandleShoot()
     {
-        if (_starterAssetsInputs.shoot && _cooldownAmount <= 0.0f)
+        if (_currentWeapon && _starterAssetsInputs.shoot && _cooldownAmount <= 0.0f)
         {
             _currentWeapon.Shoot(WeaponDetails);
             _animator.Play(_shootAnimationId, 0, 0);
