@@ -1,23 +1,28 @@
 using Cinemachine;
 using StarterAssets;
+using TMPro;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 using UnityEngine.UI;
 
 public class ActiveWeapon : MonoBehaviour
 {
-    [field: SerializeField] public WeaponSO WeaponDetails { get; private set; }
+    [field: SerializeField] public WeaponSO StartingWeapon { get; private set; }
     [field: SerializeField] public CinemachineVirtualCamera Camera { get; private set; }
     [field: SerializeField] public Image ZoomVignette { get; private set; }
+    [field: SerializeField] public TMP_Text AmmoText { get; private set; }
 
     private readonly int _shootAnimationId = Animator.StringToHash("Shoot");
     private StarterAssetsInputs _starterAssetsInputs;
     private FirstPersonController _firstPersonController;
     private Animator _animator;
     private Weapon _currentWeapon;
-
-    private float _defaultFOV = 40.0f;
+    private WeaponSO _currentWeaponDetails;
+    
+    private readonly float _defaultFOV = 40.0f;
     private float _defaultRotationSpeed = 0.0f;
     private float _cooldownAmount = 0.0f;
+    private int _currentAmmo = 0;
     
     void Awake()
     {
@@ -30,8 +35,7 @@ public class ActiveWeapon : MonoBehaviour
 
     void Start()
     {
-        _currentWeapon = GetComponentInChildren<Weapon>();
-        SwitchWeapon(WeaponDetails);
+        SwitchWeapon(StartingWeapon);
     }
     
     void Update()
@@ -40,6 +44,13 @@ public class ActiveWeapon : MonoBehaviour
         HandleZoom();
     }
 
+    public void AdjustAmmo(int amount, bool set = false)
+    {
+        int ammoToSet = set ? amount : _currentAmmo + amount; 
+        _currentAmmo = Mathf.Clamp(ammoToSet, 0, _currentWeaponDetails.MagazineSize);
+        AmmoText.text = _currentAmmo.ToString("D2");
+    }
+    
     public void SwitchWeapon(WeaponSO weaponDetails)
     {
         if (_currentWeapon)
@@ -49,22 +60,24 @@ public class ActiveWeapon : MonoBehaviour
 
         Weapon newWeapon = Instantiate(weaponDetails.WeaponPrefab, transform).GetComponent<Weapon>();
         _currentWeapon = newWeapon;
-        WeaponDetails = weaponDetails;
+        _currentWeaponDetails = weaponDetails;
+        AdjustAmmo(_currentWeaponDetails.MagazineSize, true);
         
-        ResetZoom();;
+        ResetZoom();
     }
     
     private void HandleShoot()
     {
         if (_cooldownAmount > 0.0f) _cooldownAmount -= Time.deltaTime;
         
-        if (_starterAssetsInputs.shoot && _cooldownAmount <= 0.0f)
+        if (_starterAssetsInputs.shoot && _cooldownAmount <= 0.0f && _currentAmmo > 0)
         {
-            _currentWeapon.Shoot(WeaponDetails);
+            _currentWeapon.Shoot(_currentWeaponDetails);
             _animator.Play(_shootAnimationId, 0, 0);
-            _cooldownAmount = WeaponDetails.FireRate;
+            _cooldownAmount = _currentWeaponDetails.FireRate;
+            AdjustAmmo(-1);
 
-            if (!WeaponDetails.IsAutomatic)
+            if (!_currentWeaponDetails.IsAutomatic)
             {
                 _starterAssetsInputs.ShootInput(false);
             }
@@ -73,24 +86,24 @@ public class ActiveWeapon : MonoBehaviour
 
     void HandleZoom()
     {
-        if (WeaponDetails.CanZoom)
+        if (_currentWeaponDetails.CanZoom)
         {
             float cameraStartValue = Camera.m_Lens.FieldOfView;
-            float cameraEndValue = _starterAssetsInputs.zoom ? WeaponDetails.ZoomAmount : _defaultFOV;
+            float cameraEndValue = _starterAssetsInputs.zoom ? _currentWeaponDetails.ZoomAmount : _defaultFOV;
 
             float zoomVignetteStartValue = ZoomVignette.color.a;
             float zoomVignetteEndValue = _starterAssetsInputs.zoom ? 1.0f : 0.0f;
             
             if (!Mathf.Approximately(Camera.m_Lens.FieldOfView, cameraEndValue))
             {
-                Camera.m_Lens.FieldOfView = Mathf.Lerp(cameraStartValue, cameraEndValue, WeaponDetails.ZoomRate * Time.deltaTime);
+                Camera.m_Lens.FieldOfView = Mathf.Lerp(cameraStartValue, cameraEndValue, _currentWeaponDetails.ZoomRate * Time.deltaTime);
 
                 Color color = ZoomVignette.color;
-                color.a = Mathf.Lerp(zoomVignetteStartValue, zoomVignetteEndValue, WeaponDetails.ZoomRate * Time.deltaTime);
+                color.a = Mathf.Lerp(zoomVignetteStartValue, zoomVignetteEndValue, _currentWeaponDetails.ZoomRate * Time.deltaTime);
                 ZoomVignette.color = color;
             }
 
-            float rotationSpeed = _starterAssetsInputs.zoom ? WeaponDetails.ZoomRotationSpeed : _defaultRotationSpeed;
+            float rotationSpeed = _starterAssetsInputs.zoom ? _currentWeaponDetails.ZoomRotationSpeed : _defaultRotationSpeed;
             _firstPersonController.SetRotationSpeed(rotationSpeed);
         }
     }

@@ -4,6 +4,8 @@ namespace Pickups
 {
     public abstract class Pickup : MonoBehaviour
     {
+        [field: SerializeField] public bool Rotates { get; private set; }
+        [field: SerializeField] public bool Shrinks { get; private set; }
         [field: SerializeField] public float RotationSpeed { get; private set; }
         [field: SerializeField] public float ShrinkRate { get; private set; }
 
@@ -35,13 +37,16 @@ namespace Pickups
     
         private void Rotate()
         {
-            float angle = (RotationSpeed * Time.deltaTime) % 360; 
-            transform.Rotate(Vector3.up, angle);
+            if (Rotates)
+            {
+                float angle = (RotationSpeed * Time.deltaTime) % 360; 
+                transform.Rotate(Vector3.up, angle);
+            }
         }
 
         private void Shrink()
         {
-            if (!_collider.enabled)
+            if (!_collider.enabled && Shrinks)
             {
                 float newScale = ShrinkRate * Time.deltaTime;
 
